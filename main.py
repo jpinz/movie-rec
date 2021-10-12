@@ -11,6 +11,7 @@ tmdb.API_KEY = env_values["API_KEY"]
 base_api_endpoint = f'/api/v{constants.API_VERSION}'
 app = Flask(__name__)
 
+
 def get_country(ip_address):
     try:
         response = requests.get("http://ip-api.com/json/{}".format(ip_address))
@@ -20,9 +21,10 @@ def get_country(ip_address):
         return "Unknown"
 
 
-@app.route('/welcome/', methods=['GET'])
+@app.route('/', methods=['GET'])
 def welcome():
-    return "Welcome to localhost:5050"
+    return "Welcome to the Movie Recommender"
+
 
 # A route to get/set the user's desired media type.
 @app.route(f'{base_api_endpoint}/media_type', methods=['GET', 'POST'])
@@ -31,9 +33,10 @@ def api_media_type():
         media_type = request.args.get('mediaType')
         session['mediaType'] = media_type
         return media_type
-    if session['mediaType']:
+    if session.get('mediaType'):
         return session['mediaType']
-    return
+    return "No media type specified."
+
 
 # A route to get/set the user's region.
 @app.route(f'{base_api_endpoint}/region', methods=['GET', 'POST'])
@@ -46,7 +49,7 @@ def api_region():
         return session['countryCode']
 
     country = 'US'
-    if (app.debug):
+    if app.debug:
         session['countryCode'] = country
         return country
 
@@ -56,6 +59,7 @@ def api_region():
         country = get_country(request.environ['HTTP_X_FORWARDED_FOR'])
     session['countryCode'] = country
     return country
+
 
 if __name__ == '__main__':
     app.secret_key = env_values['FLASK_SECRET']
