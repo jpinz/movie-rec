@@ -1,12 +1,14 @@
 import json
 import requests
 from dotenv import dotenv_values
-from api.title import title
+from imdb_api.imdb_api import Imdb_Api
 
 config = dotenv_values(".env")
 api_key = config["API_KEY"]
 
-her_id = 'tt1798709'
+HER_ID = 'tt1798709'
 
-movie_content = title(api_key, her_id)
-print(json.dumps(movie_content, indent = 2))
+api_obj = Imdb_Api(api_key)
+
+movie_content = api_obj.Title(HER_ID)
+print(json.dumps(movie_content.get(), indent = 2))
