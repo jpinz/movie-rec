@@ -42,7 +42,7 @@ def welcome():
 @app.route(f'{base_api_endpoint}/media_type', methods=['GET', 'POST'])
 def api_media_type():
     if request.method == 'POST':
-        media_type = request.args.get('mediaType')
+        media_type = request.json.get('mediaType')
         session['mediaType'] = media_type
         return media_type
     if session.get('mediaType'):
@@ -54,7 +54,7 @@ def api_media_type():
 @app.route(f'{base_api_endpoint}/region', methods=['GET', 'POST'])
 def api_region():
     if request.method == 'POST':
-        country = request.args.get('countryCode')
+        country = request.json.get('countryCode')
         session['countryCode'] = country
         return country
     if session.get('countryCode'):
