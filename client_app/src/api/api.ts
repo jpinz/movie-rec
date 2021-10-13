@@ -18,11 +18,15 @@ const requests = {
 export const MediaType = {
 	getMediaType: (): Promise<MediaTypeOptions> => requests.get('media_type') as Promise<MediaTypeOptions>,
 	setMediaType: (mediaType: MediaTypeOptions): Promise<MediaTypeOptions> =>
-		requests.post('media_type', {mediaType: MediaTypeOptions[mediaType]}) as Promise<MediaTypeOptions>,
-};
+		requests.post('media_type', {mediaType: mediaType}) as Promise<MediaTypeOptions>,
+}
 
 export const Region = {
 	getRegion: (): Promise<string> => requests.get('region') as Promise<string>,
 	setRegion: (countryCode: string): Promise<string> =>
 		requests.post('region', {countryCode: countryCode}) as Promise<string>,
+};
+
+export const GenresAPI = {
+	getGenres: (mediaType: MediaTypeOptions): Promise<IGenre[]> => requests.get(`${mediaType}/genres`) as Promise<IGenre[]>,
 };

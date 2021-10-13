@@ -1,6 +1,6 @@
 import React from 'react';
-import MediaTypes from '../components/MediaTypes';
-import RegionComponent from '../components/Region';
+import MediaTypes from '../components/mediaTypes/MediaTypes';
+import RegionComponent from '../components/region/Region';
 
 function Page1() {
   return (

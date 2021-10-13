@@ -1,6 +1,6 @@
 enum MediaTypeOptions {
-    Movie,
-    TV,
+    Movie = "movie",
+    TV = "tv",
 }
 
 export default MediaTypeOptions;
