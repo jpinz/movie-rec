@@ -90,7 +90,7 @@ def api_tv_certifications(country_code):
 @app.route(f'{base_api_endpoint}/movie/genres', methods=['GET'])
 def api_movie_genres():
     key = 'movie_genres'
-    return jsonify(tmdb_client.get_movie_genres())
+    return get_or_create_value(key, tmdb_client.get_movie_genres)
 
 # A route to get TV genres from TMDb
 @app.route(f'{base_api_endpoint}/tv/genres', methods=['GET'])
