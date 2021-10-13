@@ -77,7 +77,7 @@ class TMDbClient:
 
         endpoint = '/certification/movie/list'
         response = self.get(endpoint)
-        if not country_code:
+        if country_code:
             return response['certifications'][country_code]
         return response['certifications']
 
@@ -96,7 +96,7 @@ class TMDbClient:
 
         endpoint = '/certification/tv/list'
         response = self.get(endpoint)
-        if not country_code:
+        if country_code:
             return response['certifications'][country_code]
         return response['certifications']
 

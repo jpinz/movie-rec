@@ -1,13 +1,12 @@
 import React from 'react';
-import RegionComponent from '../components/region/Region';
 import Genres from '../components/genres/Genres';
+import ContentRating from '../components/contentRating/ContentRating';
 
 function Page2() {
   return (
     <div className="Page1">
         <Genres />
-        <p>No Genres</p>
-        <p>Content Rating</p>
+        <ContentRating />
         <p>Provider or Rent/buy</p>
     </div>
   );

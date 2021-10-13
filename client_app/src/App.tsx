@@ -13,9 +13,6 @@ function App() {
       <div>
         <Link to="/page2">Page2</Link>
       </div>
-      <div>
-        <Link to="/contact">Contact Me</Link>
-      </div>
 
       <hr />
 

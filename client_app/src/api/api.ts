@@ -30,3 +30,7 @@ export const Region = {
 export const GenresAPI = {
 	getGenres: (mediaType: MediaTypeOptions): Promise<IGenre[]> => requests.get(`${mediaType}/genres`) as Promise<IGenre[]>,
 };
+
+export const ContentRatingAPI = {
+	getContentRatings: (mediaType: MediaTypeOptions, countryCode: string): Promise<[{certification: string, meaning: string, order: number}]> => requests.get(`${mediaType}/certification/${countryCode}`) as Promise<[{certification: string, meaning: string, order: number}]>,
+};
