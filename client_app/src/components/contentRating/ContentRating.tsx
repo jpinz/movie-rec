@@ -1,51 +1,78 @@
 import React, { useState, useEffect } from "react";
-import { Box } from "@chakra-ui/react";
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+} from "@chakra-ui/react";
 import MediaTypeOptions from "../../models/MediaTypeOptions";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import {
   addContentRating,
   removeContentRating,
+  populateContentRatings,
 } from "./contentRatingSlice";
 import { ContentRatingAPI } from "../../api/api";
 import Multiselect from "multiselect-react-dropdown";
+import { IContentRating } from "./contentRatingSlice";
 
 interface IContentRatingProps {}
 
 const ContentRating: React.FC<IContentRatingProps> = ({}) => {
-
-  const choices = useAppSelector((state) => state.contentRating.choices);
+  const choices = useAppSelector((state) =>
+    state.contentRating.options.filter((rating) =>
+      state.contentRating.choices.includes(rating.order)
+    )
+  );
+  const ratings = useAppSelector((state) => state.contentRating.options);
   const mediaTypeChoice = useAppSelector((state) => state.mediaTypes.choice);
   const countryCode = useAppSelector((state) => state.region.countryCode);
   const dispatch = useAppDispatch();
-  const [ratings, setRatings] = useState<Map<number, string>>(new Map());
   const [isError, setIsError] = useState<boolean>(false);
 
   const handleContentRatingAdd = (
     _selectedList: [{}] | undefined,
-    selectedItem: number
+    selectedItem: IContentRating
   ) => {
-    dispatch(addContentRating(selectedItem));
+    dispatch(addContentRating(selectedItem.order));
   };
 
   const handleContentRatingRemove = (
     _selectedList: [{}] | undefined,
-    removedItem: number
+    removedItem: IContentRating
   ) => {
-    dispatch(removeContentRating(removedItem));
+    dispatch(removeContentRating(removedItem.order));
   };
 
   useEffect(() => {
     ContentRatingAPI.getContentRatings(mediaTypeChoice, countryCode)
       .then((data) => {
         console.log(data);
-        var result = new Map(data.map((key) => [key.order, key.certification]));
-        setRatings(result);
+        dispatch(populateContentRatings(data));
       })
       .catch((err) => {
         setIsError(true);
       });
     return () => {};
   }, []);
+
+  let ratingsAccordionList = ratings.map((rating, index) => {
+    return (
+      <AccordionItem>
+        <h2>
+          <AccordionButton>
+            <Box flex="1" textAlign="left">
+              {rating.certification}
+            </Box>
+            <AccordionIcon />
+          </AccordionButton>
+        </h2>
+        <AccordionPanel pb={4}>{rating.meaning}</AccordionPanel>
+      </AccordionItem>
+    );
+  });
 
   return (
     <div>
@@ -63,15 +90,31 @@ const ContentRating: React.FC<IContentRatingProps> = ({}) => {
       )}
       <h1>Content Ratings for: {mediaTypeChoice} </h1>
       <div id="content_ratings">
-      <p>Wanted Genres:</p>
-
+        <p>Content rating options:</p>
         <Multiselect
-          options={Array.from(ratings, ([order, certification]) => ({ order, certification }))} // Options to display in the dropdown
+          options={ratings} // Options to display in the dropdown
           selectedValues={choices} // Preselected value to persist in dropdown
           onSelect={handleContentRatingAdd} // Function will trigger on select event
           onRemove={handleContentRatingRemove} // Function will trigger on remove event
           displayValue="certification" // Property name to display in the dropdown options
         />
+        <Accordion allowToggle>
+          <AccordionItem>
+            <h2>
+              <AccordionButton>
+                <Box flex="1" textAlign="left">
+                  Content Rating Descriptions
+                </Box>
+                <AccordionIcon />
+              </AccordionButton>
+            </h2>
+            <AccordionPanel pb={4} px={4}>
+              <Accordion defaultIndex={[0]}>
+                {ratingsAccordionList}
+              </Accordion>
+            </AccordionPanel>
+          </AccordionItem>
+        </Accordion>
       </div>
     </div>
   );

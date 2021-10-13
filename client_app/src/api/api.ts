@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import MediaTypeOptions from '../models/MediaTypeOptions';
+import { IContentRating } from '../components/contentRating/contentRatingSlice';
 
 const instance = axios.create({
 	baseURL: '/api/v1/',
@@ -32,5 +33,5 @@ export const GenresAPI = {
 };
 
 export const ContentRatingAPI = {
-	getContentRatings: (mediaType: MediaTypeOptions, countryCode: string): Promise<[{certification: string, meaning: string, order: number}]> => requests.get(`${mediaType}/certification/${countryCode}`) as Promise<[{certification: string, meaning: string, order: number}]>,
+	getContentRatings: (mediaType: MediaTypeOptions, countryCode: string): Promise<IContentRating[]> => requests.get(`${mediaType}/certification/${countryCode}`) as Promise<IContentRating[]>,
 };
