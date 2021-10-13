@@ -1,10 +1,12 @@
+import hashlib
 import json
 import requests
 from dotenv import dotenv_values
-import tmdbsimple as tmdb
 from flask import Flask, session, redirect, url_for, escape, request
 import constants
+import tmdb
 from tmdb.client import TMDbClient
+from tmdb.constants import TMDbConstants
 
 env_values = dotenv_values(".env")
 
@@ -66,17 +68,23 @@ def api_region():
     session['countryCode'] = country
     return country
 
+# A route to get details about a company from TMDb
+@app.route(f'{base_api_endpoint}/company/<int:id>', methods=['GET'])
+def api_company(id):
+    key = f'company_{id}'
+    return get_or_create_value(key, tmdb_client.get_company(id))
+
 # A route to get movie certifications from TMDb
-@app.route(f'{base_api_endpoint}/movie/certification', methods=['GET'])
-def api_movie_certifications():
-    key = 'movie_certifications'
-    return get_or_create_value(key, tmdb_client.get_movie_certifications())
+@app.route(f'{base_api_endpoint}/movie/certification/<country_code>', methods=['GET'])
+def api_movie_certifications(country_code):
+    key = f'movie_certifications_{country_code}'
+    return get_or_create_value(key, tmdb_client.get_movie_certifications(country_code))
 
 # A route to get TV show certifications from TMDb
-@app.route(f'{base_api_endpoint}/tv/certification', methods=['GET'])
-def api_tv_certifications():
-    key = 'tv_certifications'
-    return get_or_create_value(key, tmdb_client.get_tv_certifications())
+@app.route(f'{base_api_endpoint}/tv/certification/<country_code>', methods=['GET'])
+def api_tv_certifications(country_code):
+    key = f'tv_certifications_{country_code}'
+    return get_or_create_value(key, tmdb_client.get_tv_certifications(country_code))
 
 # A route to get movie genres from TMDb
 @app.route(f'{base_api_endpoint}/movie/genres', methods=['GET'])
@@ -228,14 +236,22 @@ def api_providers_tv(watch_region=''):
     key = f'providers_tv_{watch_region}'
     return get_or_create_value(key, tmdb_client.get_tv_providers(watch_region))
 
-if __name__ == '__main__':
-    # app.secret_key = env_values['FLASK_SECRET']
-    # app.run(debug=True, host='0.0.0.0', port=5050)
-    response = tmdb_client.get_movie_certifications()
-    print(response)
+# A route to discover movies based on given criteria
+@app.route(f'{base_api_endpoint}/discover/movies', methods=['GET'])
+def api_discover_movies():
+    hash = hashlib.md5(json.dumps(request.json, sort_keys=True, indent=2))
+    key = f'discover_movie_{hash}'
+    prop = json.load(request.json)
+    return get_or_create_value(key, tmdb_client.discover_movies(prop))
 
-#
-# movie = tmdb.Movies(603)
-# response = movie.info()
-# # print(json.dumps(response, indent=2))
-# print(json.dumps(movie, indent=2))
+# A route to discover TV shows based on given criteria
+@app.route(f'{base_api_endpoint}/discover/tv', methods=['GET'])
+def api_discover_tv():
+    hash = hashlib.md5(json.dumps(request.json, sort_keys=True, indent=2))
+    key = f'discover_movie_{hash}'
+    prop = json.load(request.json)
+    return get_or_create_value(key, tmdb_client.discover_tv(prop))
+
+if __name__ == '__main__':
+    app.secret_key = env_values['FLASK_SECRET']
+    app.run(debug=True, host='0.0.0.0', port=5050)

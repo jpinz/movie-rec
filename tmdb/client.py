@@ -1,4 +1,6 @@
 import requests
+import json
+from tmdb.constants import TMDbConstants
 
 class TMDbClient:
     base_url = 'https://api.themoviedb.org/3'
@@ -12,7 +14,6 @@ class TMDbClient:
 
         Args:
             endpoint: the endpoint to append to the base URL of the TMDb API.
-            Note: API key should not be included in this endpoint.
         Returns:
             The JSON response from TMDb.
         Raises:
@@ -21,13 +22,51 @@ class TMDbClient:
 
         url = f'{self.base_url}{endpoint}'
         response = requests.get(url, headers={'Authorization': f'Bearer {self.access_token}'})
-        return response.json()
+        return json.loads(response.content.decode('ascii', 'ignore'))
 
-    def get_movie_certifications(self):
-        """Gets regional certifications for movies.
+    def discover(self, endpoint, prop):
+        """Discovers all TV shows or movies that meet the criteria outlined in the given properties dictionary.
+        This function will only return the first page of results (up to 20 elements).
 
         Args:
+            endpoint: the endpoint to append to the base URL of the TMDb API.
+            prop: a dictionary containing all criteria that must be met during discovery.
+        Returns:
+            A list of TV show or movie objects that meet the given criteria.
+        Raises:
             None.
+        """
+
+        seen = False
+        for key, value in prop.items():
+            if seen:
+                endpoint = f'{endpoint}&{key}={value}'
+            else:
+                seen = True
+                endpoint = f'{endpoint}?{key}={value}'
+
+        response = self.get(endpoint)
+        return response['results']
+
+    def get_company(self, company_id):
+        """Gets details for a specific company.
+
+        Args:
+            company_id: the TMDb ID for a company.
+        Returns:
+            An object containing metadata about a company.
+        Raises:
+            None.
+        """
+
+        endpoint = f'/company/{company_id}'
+        return self.get(endpoint)
+
+    def get_movie_certifications(self, country_code=''):
+        """Gets regional certifications for movies for a given country, if provided.
+
+        Args:
+            country_code: (optional) the country to get the movie certifications for.
         Returns:
             A dictionary mapping a country code to the list of certifications in that region.
             Note: the lower the rating, the wider the audience that can view (I think? NR is lowest priority in US)
@@ -38,13 +77,15 @@ class TMDbClient:
 
         endpoint = '/certification/movie/list'
         response = self.get(endpoint)
+        if not country_code:
+            return response['certifications'][country_code]
         return response['certifications']
 
-    def get_tv_certifications(self):
-        """Gets regional certifications for TV shows.
+    def get_tv_certifications(self, country_code=''):
+        """Gets regional certifications for TV shows for a given country, if provided.
 
         Args:
-            None.
+            country_code: (optional) the country to get the TV certifications for.
         Returns:
             A dictionary mapping a country code to the list of certifications in that region.
             Note: the lower the rating, the wider the audience that can view (I think? NR is lowest priority in US)
@@ -55,6 +96,8 @@ class TMDbClient:
 
         endpoint = '/certification/tv/list'
         response = self.get(endpoint)
+        if not country_code:
+            return response['certifications'][country_code]
         return response['certifications']
 
     def get_movie_genres(self):
@@ -451,3 +494,31 @@ class TMDbClient:
 
         response = self.get(endpoint)
         return response['results']
+
+    def discover_movies(self, prop):
+        """Discovers movies that meet criteria outlined in the given properties dictionary.
+
+        Args:
+            prop: a dictionary of movie criteria set by the client
+        Returns:
+            A list of movie objects that meet the criteria specified.
+        Raises:
+            None.
+        """
+
+        endpoint = f'/discover/movie'
+        return self.discover(endpoint, prop)
+
+    def discover_tv(self, prop):
+        """Discovers TV shows that meet criteria outlined in the given properties dictionary.
+
+        Args:
+            prop: a dictionary of movie criteria set by the client
+        Returns:
+            A list of TV show objects that meet the criteria specified.
+        Raises:
+            None.
+        """
+
+        endpoint = f'/discover/tv'
+        return self.discover(endpoint, prop)
