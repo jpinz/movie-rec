@@ -78,7 +78,7 @@ class TMDbClient:
         endpoint = '/certification/movie/list'
         response = self.get(endpoint)
         if country_code:
-            return response['certifications'][country_code]
+            return sorted(response['certifications'][country_code], key=lambda x: x['order'])
         return response['certifications']
 
     def get_tv_certifications(self, country_code=''):
@@ -97,7 +97,7 @@ class TMDbClient:
         endpoint = '/certification/tv/list'
         response = self.get(endpoint)
         if country_code:
-            return response['certifications'][country_code]
+            return sorted(response['certifications'][country_code], key=lambda x: x['order'])
         return response['certifications']
 
     def get_movie_genres(self):
