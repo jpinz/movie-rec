@@ -22,10 +22,16 @@ def get_country(ip_address):
     except Exception as e:
         return "Unknown"
 
+def get_or_create_value(key, func):
+    if session.get(key):
+        return session[key]
+    result = func()
+    session[key] = result
+    return result
+
 @app.route('/', methods=['GET'])
 def welcome():
     return "Welcome to the Movie Recommender"
-
 
 # A route to get/set the user's desired media type.
 @app.route(f'{base_api_endpoint}/media_type', methods=['GET', 'POST'])
@@ -37,7 +43,6 @@ def api_media_type():
     if session.get('mediaType'):
         return session['mediaType']
     return "No media type specified."
-
 
 # A route to get/set the user's region.
 @app.route(f'{base_api_endpoint}/region', methods=['GET', 'POST'])
@@ -61,23 +66,167 @@ def api_region():
     session['countryCode'] = country
     return country
 
+# A route to get movie certifications from TMDb
+@app.route(f'{base_api_endpoint}/movie/certification', methods=['GET'])
+def api_movie_certifications():
+    key = 'movie_certifications'
+    return get_or_create_value(key, tmdb_client.get_movie_certifications())
+
+# A route to get TV show certifications from TMDb
+@app.route(f'{base_api_endpoint}/tv/certification', methods=['GET'])
+def api_tv_certifications():
+    key = 'tv_certifications'
+    return get_or_create_value(key, tmdb_client.get_tv_certifications())
+
 # A route to get movie genres from TMDb
 @app.route(f'{base_api_endpoint}/movie/genres', methods=['GET'])
 def api_movie_genres():
-    if session.get('movie_genres'):
-        return session['movie_genres']
-    genres = tmdb_client.get_movie_genres()
-    session['movie_genres'] = genres
-    return genres
+    key = 'movie_genres'
+    return get_or_create_value(key, tmdb_client.get_movie_genres())
 
 # A route to get TV genres from TMDb
 @app.route(f'{base_api_endpoint}/tv/genres', methods=['GET'])
 def api_tv_genres():
-    if session.get('tv_genres'):
-        return session['tv_genres']
-    genres = tmdb_client.get_tv_genres()
-    session['tv_genres'] = genres
-    return genres
+    key = 'tv_genres'
+    return get_or_create_value(key, tmdb_client.get_tv_genres())
+
+# A route to get details for a given keyword from TMDb
+@app.route(f'{base_api_endpoint}/keyword/<int:id>', methods=['GET'])
+def api_keyword(id):
+    key = f'keyword_{id}'
+    return get_or_create_value(key, tmdb_client.get_keyword(id))
+
+# A route to get movies with a given keyword from TMDb
+@app.route(f'{base_api_endpoint}/keyword/<int:id>/movies', methods=['GET'])
+def api_keyword_movies(id):
+    key = f'keyword_movies_{id}'
+    return get_or_create_value(key, tmdb_client.get_keyword_movies(id))
+
+# A route to get details for a given movie from TMDb
+@app.route(f'{base_api_endpoint}/movie/<int:id>', methods=['GET'])
+def api_movie(id):
+    key = f'movie_{id}'
+    return get_or_create_value(key, tmdb_client.get_movie(id))
+
+# A route to get the list of people a part of the cast of a given movie from TMDb
+@app.route(f'{base_api_endpoint}/movie/<int:id>/cast', methods=['GET'])
+def api_movie_cast(id):
+    key = f'movie_cast_{id}'
+    return get_or_create_value(key, tmdb_client.get_movie_cast(id))
+
+# A route to get the list of people a part of the crew of a given movie from TMDb
+@app.route(f'{base_api_endpoint}/movie/<int:id>/crew', methods=['GET'])
+def api_movie_crew(id):
+    key = f'movie_crew_{id}'
+    return get_or_create_value(key, tmdb_client.get_movie_crew(id))
+
+# A route to get the list of keywords associated with a given movie from TMDb
+@app.route(f'{base_api_endpoint}/movie/<int:id>/keywords', methods=['GET'])
+def api_movie_keywords(id):
+    key = f'movie_keywords_{id}'
+    return get_or_create_value(key, tmdb_client.get_movie_keywords(id))
+
+# A route to get the list of release dates associated with a given movie from TMDb
+@app.route(f'{base_api_endpoint}/movie/<int:id>/releases', methods=['GET'])
+def api_movie_releases(id):
+    key = f'movie_releases_{id}'
+    return get_or_create_value(key, tmdb_client.get_movie_release_dates(id))
+
+# A route to get the list of providers available to stream a given movie from TMDb
+@app.route(f'{base_api_endpoint}/movie/<int:id>/providers', methods=['GET'])
+def api_movie_providers(id):
+    key = f'movie_providers_{id}'
+    return get_or_create_value(key, tmdb_client.get_movie_providers(id))
+
+# A route to get the list of movies a given person was credited with being a part of the cast from TMDb
+@app.route(f'{base_api_endpoint}/person/<int:id>/moviesCast', methods=['GET'])
+def api_person_movies_cast(id):
+    key = f'person_movies_cast_{id}'
+    return get_or_create_value(key, tmdb_client.get_person_movies_cast(id))
+
+# A route to get the list of movies a given person was credited with being a part of the crew from TMDb
+@app.route(f'{base_api_endpoint}/person/<int:id>/moviesCrew', methods=['GET'])
+def api_person_movies_crew(id):
+    key = f'person_movies_crew_{id}'
+    return get_or_create_value(key, tmdb_client.get_person_movies_crew(id))
+
+# A route to get the list of TV shows a given person was credited with being a part of the cast from TMDb
+@app.route(f'{base_api_endpoint}/person/<int:id>/tvCast', methods=['GET'])
+def api_person_tv_cast(id):
+    key = f'person_tv_cast_{id}'
+    return get_or_create_value(key, tmdb_client.get_person_tv_cast(id))
+
+# A route to get the list of TV shows a given person was credited with being a part of the crew from TMDb
+@app.route(f'{base_api_endpoint}/person/<int:id>/tvCrew', methods=['GET'])
+def api_person_tv_crew(id):
+    key = f'person_tv_crew_{id}'
+    return get_or_create_value(key, tmdb_client.get_person_tv_crew(id))
+
+# A route to get the list of both TV shows AND movies a given person was credited with being a part of the cast from TMDb
+@app.route(f'{base_api_endpoint}/person/<int:id>/allCast', methods=['GET'])
+def api_person_all_cast(id):
+    key = f'person_all_cast_{id}'
+    return get_or_create_value(key, tmdb_client.get_person_all_cast(id))
+
+# A route to get the list of TV shows AND movies a given person was credited with being a part of the crew from TMDb
+@app.route(f'{base_api_endpoint}/person/<int:id>/allCrew', methods=['GET'])
+def api_person_all_crew(id):
+    key = f'person_all_crew_{id}'
+    return get_or_create_value(key, tmdb_client.get_person_all_crew(id))
+
+# A route to get details for a given TV show from TMDb
+@app.route(f'{base_api_endpoint}/tv/<int:id>', methods=['GET'])
+def api_tv(id):
+    key = f'tv_{id}'
+    return get_or_create_value(key, tmdb_client.get_tv(id))
+
+# A route to get the list of people a part of the cast of a given TV show from TMDb
+@app.route(f'{base_api_endpoint}/tv/<int:id>/cast', methods=['GET'])
+def api_tv_cast(id):
+    key = f'tv_cast_{id}'
+    return get_or_create_value(key, tmdb_client.get_tv_cast(id))
+
+# A route to get the list of people a part of the crew of a given TV show from TMDb
+@app.route(f'{base_api_endpoint}/tv/<int:id>/crew', methods=['GET'])
+def api_tv_crew(id):
+    key = f'tv_crew_{id}'
+    return get_or_create_value(key, tmdb_client.get_tv_crew(id))
+
+# A route to get all content ratings for a given TV show from TMDb
+@app.route(f'{base_api_endpoint}/tv/<int:id>/contentRatings', methods=['GET'])
+def api_tv_content_ratings(id):
+    key = f'tv_content_ratings_{id}'
+    return get_or_create_value(key, tmdb_client.get_tv_content_ratings(id))
+
+# A route to get all keywords associated with a given TV show from TMDb
+@app.route(f'{base_api_endpoint}/tv/<int:id>/keywords', methods=['GET'])
+def api_tv_keywords(id):
+    key = f'tv_keywords_{id}'
+    return get_or_create_value(key, tmdb_client.get_tv_keywords(id))
+
+# A route to get the list of providers available to stream a given TV show from TMDb
+@app.route(f'{base_api_endpoint}/tv/<int:id>/providers', methods=['GET'])
+def api_tv_providers(id):
+    key = f'tv_providers_{id}'
+    return get_or_create_value(key, tmdb_client.get_tv_providers(id))
+
+# A route to get the countries that provider data is available for from TMDb
+@app.route(f'{base_api_endpoint}/providers', methods=['GET'])
+def api_providers():
+    key = 'providers'
+    return get_or_create_value(key, tmdb_client.get_provider_countries())
+
+# A route to get the list of movie providers with available data from TMDb
+@app.route(f'{base_api_endpoint}/providers/movie/<watch_region>', methods=['GET'])
+def api_movie_providers(watch_region=''):
+    key = f'movie_providers_{watch_region}'
+    return get_or_create_value(key, tmdb_client.get_movie_providers(watch_region))
+
+# A route to get the list of TV show providers with available data from TMDb
+@app.route(f'{base_api_endpoint}/providers/tv/<watch_region>', methods=['GET'])
+def api_tv_providers(watch_region=''):
+    key = f'tv_providers_{watch_region}'
+    return get_or_create_value(key, tmdb_client.get_tv_providers(watch_region))
 
 if __name__ == '__main__':
     app.secret_key = env_values['FLASK_SECRET']

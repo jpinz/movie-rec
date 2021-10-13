@@ -93,7 +93,7 @@ class TMDbClient:
         response = self.get(endpoint)
         return response['genres']
 
-    def get_keyword_details(self, keyword_id):
+    def get_keyword(self, keyword_id):
         """Gets the details for a given keyword.
 
         Args:
