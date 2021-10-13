@@ -2,7 +2,7 @@ import hashlib
 import json
 import requests
 from dotenv import dotenv_values
-from flask import Flask, session, redirect, url_for, escape, request
+from flask import Flask, session, jsonify, url_for, escape, request
 import constants
 import tmdb
 from tmdb.client import TMDbClient
@@ -90,7 +90,7 @@ def api_tv_certifications(country_code):
 @app.route(f'{base_api_endpoint}/movie/genres', methods=['GET'])
 def api_movie_genres():
     key = 'movie_genres'
-    return get_or_create_value(key, tmdb_client.get_movie_genres())
+    return jsonify(tmdb_client.get_movie_genres())
 
 # A route to get TV genres from TMDb
 @app.route(f'{base_api_endpoint}/tv/genres', methods=['GET'])
@@ -232,6 +232,7 @@ def api_providers_movies(watch_region=''):
 
 # A route to get the list of TV show providers with available data from TMDb
 @app.route(f'{base_api_endpoint}/providers/tv/<watch_region>', methods=['GET'])
+
 def api_providers_tv(watch_region=''):
     key = f'providers_tv_{watch_region}'
     return get_or_create_value(key, tmdb_client.get_tv_providers(watch_region))
