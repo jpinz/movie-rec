@@ -2,10 +2,10 @@ import requests
 
 class TMDbClient:
     base_url = 'https://api.themoviedb.org/3'
-    api_key = ''
+    access_token = ''
 
-    def __init__(self, api_key):
-        self.api_key = api_key
+    def __init__(self, access_token):
+        self.access_token = access_token
 
     def get(self, endpoint):
         """Makes a GET request against the provided endpoint on TMDb.
@@ -19,12 +19,8 @@ class TMDbClient:
             None.
         """
 
-        if '?' in endpoint:
-            url = f'{self.base_url}{endpoint}&api_key={self.api_key}'
-        else:
-            url = f'{self.base_url}{endpoint}?api_key={self.api_key}'
-
-        response = requests.get(url)
+        url = f'{self.base_url}{endpoint}'
+        response = requests.get(url, headers={'Authorization': f'Bearer {self.access_token}'})
         return response.json()
 
     def get_movie_certifications(self):

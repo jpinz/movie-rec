@@ -9,9 +9,9 @@ from tmdb.client import TMDbClient
 env_values = dotenv_values(".env")
 
 base_api_endpoint = f'/api/v{constants.API_VERSION}'
-tmdb_api_key = dotenv_values(".env")["API_KEY"]
+tmdb_access_token = dotenv_values(".env")["ACCESS_TOKEN"]
 app = Flask(__name__)
-tmdb_client = TMDbClient(tmdb_api_key)
+tmdb_client = TMDbClient(tmdb_access_token)
 
 
 def get_country(ip_address):
@@ -218,19 +218,21 @@ def api_providers():
 
 # A route to get the list of movie providers with available data from TMDb
 @app.route(f'{base_api_endpoint}/providers/movie/<watch_region>', methods=['GET'])
-def api_movie_providers(watch_region=''):
-    key = f'movie_providers_{watch_region}'
+def api_providers_movies(watch_region=''):
+    key = f'providers_movies_{watch_region}'
     return get_or_create_value(key, tmdb_client.get_movie_providers(watch_region))
 
 # A route to get the list of TV show providers with available data from TMDb
 @app.route(f'{base_api_endpoint}/providers/tv/<watch_region>', methods=['GET'])
-def api_tv_providers(watch_region=''):
-    key = f'tv_providers_{watch_region}'
+def api_providers_tv(watch_region=''):
+    key = f'providers_tv_{watch_region}'
     return get_or_create_value(key, tmdb_client.get_tv_providers(watch_region))
 
 if __name__ == '__main__':
-    app.secret_key = env_values['FLASK_SECRET']
-    app.run(debug=True, host='0.0.0.0', port=5050)
+    # app.secret_key = env_values['FLASK_SECRET']
+    # app.run(debug=True, host='0.0.0.0', port=5050)
+    response = tmdb_client.get_movie_certifications()
+    print(response)
 
 #
 # movie = tmdb.Movies(603)
