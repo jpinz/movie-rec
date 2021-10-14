@@ -16,7 +16,6 @@ const ProviderCard: React.FC<IProviderCardProps> = ({
   select,
 }) => {
   const handleProviderSelect = () => {
-    console.log("Toggled selection for: " + provider.provider_id);
     select(provider.provider_id);
   };
 

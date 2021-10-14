@@ -1,32 +1,36 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  SimpleGrid,
-} from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
+import { Checkbox, List } from "antd";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
-import {
-  selectProvider,
-  populateProviders,
-} from "./providerSlice";
+import { selectProvider, populateProviders, selectRentBuy } from "./providerSlice";
 import { ProvidersAPI } from "../../api/api";
-import ProviderCard from './ProviderCard';
+import ProviderCard from "./ProviderCard";
+import { CheckboxValueType } from "antd/lib/checkbox/Group";
 
 interface IProvidersProps {}
 
 const Providers: React.FC<IProvidersProps> = ({}) => {
   const choices = useAppSelector((state) =>
-    state.provider.options.filter((provider) =>
-      state.provider.choices.includes(provider.provider_id)
-    ).map((provider) => provider.provider_id));
+    state.provider.options
+      .filter((provider) =>
+        state.provider.choices.includes(provider.provider_id)
+      )
+      .map((provider) => provider.provider_id)
+  );
   const providers = useAppSelector((state) => state.provider.options);
   const mediaTypeChoice = useAppSelector((state) => state.mediaTypes.choice);
   const countryCode = useAppSelector((state) => state.region.countryCode);
   const dispatch = useAppDispatch();
   const [isError, setIsError] = useState<boolean>(false);
 
-  const handleProviderSelect = (
-    selectedItem: number
-  ) => {
+
+  const options = ['Rent', 'Buy'];
+
+  const handleRentBuySelect = (selectedItems: CheckboxValueType[]) => {
+    dispatch(selectRentBuy(selectedItems));
+  };
+
+  const handleProviderSelect = (selectedItem: number) => {
     dispatch(selectProvider(selectedItem));
   };
 
@@ -40,12 +44,6 @@ const Providers: React.FC<IProvidersProps> = ({}) => {
       });
     return () => {};
   }, []);
-
-  let providerCardMaker = providers.map((provider, index) => {
-    return (
-      <ProviderCard key={index} provider={provider} selected={choices.indexOf(provider.provider_id) !== -1} select={handleProviderSelect} />
-    );
-  });
 
   return (
     <div>
@@ -62,10 +60,27 @@ const Providers: React.FC<IProvidersProps> = ({}) => {
         </Box>
       )}
       <h1>Providers for: {mediaTypeChoice} </h1>
+      <div>
+        <p>Willing to rent or buy?</p>
+        <Checkbox.Group options={options} onChange={handleRentBuySelect} />
+      </div>
       <div id="providers">
-        <SimpleGrid columns={5} spacing={10}>
-          {providerCardMaker}
-        </SimpleGrid>
+        <List
+          grid={{ gutter: 16, column: 4 }}
+          dataSource={providers}
+          pagination={{
+            pageSize: 16,
+          }}
+          renderItem={(provider) => (
+            <List.Item>
+              <ProviderCard
+                provider={provider}
+                selected={choices.indexOf(provider.provider_id) !== -1}
+                select={handleProviderSelect}
+              />
+            </List.Item>
+          )}
+        />
       </div>
     </div>
   );
