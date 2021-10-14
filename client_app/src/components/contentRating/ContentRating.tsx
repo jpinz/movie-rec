@@ -60,7 +60,7 @@ const ContentRating: React.FC<IContentRatingProps> = ({}) => {
 
   let ratingsAccordionList = ratings.map((rating, index) => {
     return (
-      <AccordionItem>
+      <AccordionItem key={index}>
         <h2>
           <AccordionButton>
             <Box flex="1" textAlign="left">

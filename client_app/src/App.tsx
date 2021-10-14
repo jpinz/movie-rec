@@ -3,9 +3,10 @@ import "./App.css";
 import 'antd/dist/antd.css';
 import { ChakraProvider } from "@chakra-ui/react";
 
-import Page1 from "./pages/Page1";
+import Page1, { page1_def } from "./pages/Page1";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import Page2 from "./pages/Page2";
+import Page2, { page2_def } from "./pages/Page2";
+import Footer from "./components/footer/Footer";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Page2 />
           </Route>
         </Switch>
+        <Footer pages={[page1_def, page2_def]}/>
       </Router>
     </ChakraProvider>
   );

@@ -7,6 +7,7 @@ export interface IProvider {
     provider_name: string,
     provider_id: number
 }
+
 export interface ProviderState {
     choices: number[]
     options: IProvider[]
@@ -21,15 +22,13 @@ export const providerSlice = createSlice({
     name: 'provider',
     initialState,
     reducers: {
-        addProvider: (state, action: PayloadAction<number>) => {
-            // Redux Toolkit allows us to write "mutating" logic in reducers. It
-            // doesn't actually mutate the state because it uses the Immer library,
-            // which detects changes to a "draft state" and produces a brand new
-            // immutable state based off those changes
-            state.choices.push(action.payload);
-        },
-        removeProvider: (state, action: PayloadAction<number>) => {
-            state.choices = state.choices.filter(id => id !== action.payload);
+        selectProvider: (state, action: PayloadAction<number>) => {
+            let exists = state.choices.indexOf(action.payload) !== -1;
+            if(exists) {
+                state.choices = state.choices.filter(id => id !== action.payload);
+            } else {
+                state.choices.push(action.payload);
+            }
         },
         populateProviders: (state, action: PayloadAction<IProvider[]>) => {
             state.options = action.payload;
@@ -38,6 +37,6 @@ export const providerSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { addProvider, removeProvider, populateProviders } = providerSlice.actions
+export const { selectProvider, populateProviders } = providerSlice.actions
 
 export default providerSlice.reducer

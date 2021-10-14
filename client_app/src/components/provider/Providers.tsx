@@ -3,15 +3,13 @@ import {
   Box,
   SimpleGrid,
 } from "@chakra-ui/react";
-import { Card } from "antd";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import {
-  addProvider,
-  removeProvider,
+  selectProvider,
   populateProviders,
 } from "./providerSlice";
-import { ImagesAPI, ProvidersAPI } from "../../api/api";
-import { IProvider } from "./providerSlice";
+import { ProvidersAPI } from "../../api/api";
+import ProviderCard from './ProviderCard';
 
 interface IProvidersProps {}
 
@@ -19,32 +17,22 @@ const Providers: React.FC<IProvidersProps> = ({}) => {
   const choices = useAppSelector((state) =>
     state.provider.options.filter((provider) =>
       state.provider.choices.includes(provider.provider_id)
-    )
-  );
+    ).map((provider) => provider.provider_id));
   const providers = useAppSelector((state) => state.provider.options);
   const mediaTypeChoice = useAppSelector((state) => state.mediaTypes.choice);
   const countryCode = useAppSelector((state) => state.region.countryCode);
   const dispatch = useAppDispatch();
   const [isError, setIsError] = useState<boolean>(false);
 
-  const handleProviderAdd = (
-    _selectedList: [{}] | undefined,
-    selectedItem: IProvider
+  const handleProviderSelect = (
+    selectedItem: number
   ) => {
-    dispatch(addProvider(selectedItem.provider_id));
-  };
-
-  const handleProviderRemove = (
-    _selectedList: [{}] | undefined,
-    removedItem: IProvider
-  ) => {
-    dispatch(removeProvider(removedItem.provider_id));
+    dispatch(selectProvider(selectedItem));
   };
 
   useEffect(() => {
     ProvidersAPI.getProviders(mediaTypeChoice, countryCode)
       .then((data) => {
-        console.log(data);
         dispatch(populateProviders(data));
       })
       .catch((err) => {
@@ -55,18 +43,7 @@ const Providers: React.FC<IProvidersProps> = ({}) => {
 
   let providerCardMaker = providers.map((provider, index) => {
     return (
-      <Card
-        hoverable
-        style={{ width: 240 }}
-        cover={
-          <img
-            alt={provider.provider_name}
-            src={ImagesAPI.getImage(provider.logo_path)}
-          />
-        }
-      >
-        <Card.Meta title={provider.provider_name} />
-      </Card>
+      <ProviderCard key={index} provider={provider} selected={choices.indexOf(provider.provider_id) !== -1} select={handleProviderSelect} />
     );
   });
 
@@ -86,8 +63,7 @@ const Providers: React.FC<IProvidersProps> = ({}) => {
       )}
       <h1>Providers for: {mediaTypeChoice} </h1>
       <div id="providers">
-        <p>Providers:</p>
-        <SimpleGrid columns={2} spacing={10}>
+        <SimpleGrid columns={5} spacing={10}>
           {providerCardMaker}
         </SimpleGrid>
       </div>

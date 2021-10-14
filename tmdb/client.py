@@ -477,7 +477,7 @@ class TMDbClient:
             None.
         """
         endpoint = f'/watch/providers/movie'
-        if not watch_region:
+        if watch_region:
             endpoint = f'{endpoint}?watch_region={watch_region}'
 
         response = self.get(endpoint)
@@ -495,7 +495,7 @@ class TMDbClient:
             None.
         """
         endpoint = f'/watch/providers/tv'
-        if not watch_region:
+        if watch_region:
             endpoint = f'{endpoint}?watch_region={watch_region}'
 
         response = self.get(endpoint)
