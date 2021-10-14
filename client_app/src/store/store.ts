@@ -6,6 +6,7 @@ import regionReducer from '../components/region/regionSlice'
 import contentRatingReducer from '../components/contentRating/contentRatingSlice'
 import providerReducer from '../components/provider/providerSlice'
 import footerReducer from '../components/footer/footerSlice'
+import runtimeReducer from '../components/runtime/runtimeSlice'
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
     contentRating: contentRatingReducer,
     provider: providerReducer,
     footer: footerReducer,
+    runtime: runtimeReducer,
   },
 })
 
