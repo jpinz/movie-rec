@@ -4,6 +4,9 @@ import MediaTypeOptions from "../../models/MediaTypeOptions";
 import { MediaType } from "../../api/api";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import { setMediaType } from "./mediaTypeSlice";
+import { Typography } from 'antd';
+
+const { Title } = Typography;
 
 interface IMediaTypesProps {}
 
@@ -43,13 +46,10 @@ const MediaTypes: React.FC<IMediaTypesProps> = ({}) => {
           Oop!!! Error getting the media type
         </Box>
       )}
-      <h1>Currently selected: {choice} </h1>
-      <button onClick={() => onMediaTypeSelect(MediaTypeOptions.Movie)}>
-        Movie!
-      </button>
-      <button onClick={() => onMediaTypeSelect(MediaTypeOptions.TV)}>
-        TV Show!
-      </button>
+      <Title level={3}>Currently selected media type: {choice} </Title>
+      <Title underline={true} level={4}>Select media type:</Title>
+      <Title level={5}><button onClick={() => onMediaTypeSelect(MediaTypeOptions.Movie)}>Movie</button></Title>
+      <Title level={5}><button onClick={() => onMediaTypeSelect(MediaTypeOptions.TV)}>TV</button></Title>
     </div>
   );
 };

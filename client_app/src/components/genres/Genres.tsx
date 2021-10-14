@@ -10,6 +10,9 @@ import {
 import { GenresAPI } from "../../api/api";
 import MediaTypeOptions from "../../models/MediaTypeOptions";
 import Multiselect from "multiselect-react-dropdown";
+import { Typography } from 'antd';
+
+const { Title } = Typography;
 
 interface IGenresProps {}
 
@@ -76,9 +79,9 @@ const Genres: React.FC<IGenresProps> = ({}) => {
           Oop!!! Error getting the Genres
         </Box>
       )}
-      <h1>Available Genres: {mediaTypeChoice} </h1>
+      <Title underline={true} level={3}>Select wanted and unwanted {mediaTypeChoice} genres (if any):</Title>
       <div id="wanted_genres">
-      <p>Wanted Genres:</p>
+      <Title level={4}>Wanted Genres:</Title>
 
         <Multiselect
           options={Array.from(genres, ([id, name]) => ({ id, name }))} // Options to display in the dropdown
@@ -89,8 +92,9 @@ const Genres: React.FC<IGenresProps> = ({}) => {
           selectionLimit={3}
         />
       </div>
+      <br/>
       <div id="not_wanted_genres">
-          <p>Not Wanted Genres:</p>
+          <Title level={4}>Not Wanted Genres:</Title>
         <Multiselect
           options={Array.from(genres, ([id, name]) => ({ id, name }))} // Options to display in the dropdown
           selectedValues={not_wanted} // Preselected value to persist in dropdown
@@ -99,6 +103,7 @@ const Genres: React.FC<IGenresProps> = ({}) => {
           displayValue="name" // Property name to display in the dropdown options
         />
       </div>
+      <br/>
     </div>
   );
 };

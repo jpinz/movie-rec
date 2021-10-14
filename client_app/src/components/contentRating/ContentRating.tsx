@@ -17,6 +17,9 @@ import {
 import { ContentRatingAPI } from "../../api/api";
 import Multiselect from "multiselect-react-dropdown";
 import { IContentRating } from "./contentRatingSlice";
+import { Typography } from 'antd';
+
+const { Title } = Typography;
 
 interface IContentRatingProps {}
 
@@ -88,9 +91,9 @@ const ContentRating: React.FC<IContentRatingProps> = ({}) => {
           Oop!!! Error getting the Content Ratings!
         </Box>
       )}
-      <h1>Content Ratings for: {mediaTypeChoice} </h1>
+      <Title underline={true} level={3}>Select {mediaTypeChoice} content rating:</Title>
       <div id="content_ratings">
-        <p>Content rating options:</p>
+        <Title level={4}>Content rating options:</Title>
         <Multiselect
           options={ratings} // Options to display in the dropdown
           selectedValues={choices} // Preselected value to persist in dropdown
@@ -116,6 +119,7 @@ const ContentRating: React.FC<IContentRatingProps> = ({}) => {
           </AccordionItem>
         </Accordion>
       </div>
+      <br/>
     </div>
   );
 };

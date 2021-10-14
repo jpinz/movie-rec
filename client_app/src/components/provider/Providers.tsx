@@ -6,6 +6,9 @@ import { selectProvider, populateProviders, selectRentBuy } from "./providerSlic
 import { ProvidersAPI } from "../../api/api";
 import ProviderCard from "./ProviderCard";
 import { CheckboxValueType } from "antd/lib/checkbox/Group";
+import { Typography } from 'antd';
+
+const { Title } = Typography;
 
 interface IProvidersProps {}
 
@@ -59,11 +62,12 @@ const Providers: React.FC<IProvidersProps> = ({}) => {
           Oop!!! Error getting the Providers!
         </Box>
       )}
-      <h1>Providers for: {mediaTypeChoice} </h1>
+      <Title underline={true} level={3}>Select {mediaTypeChoice} streaming provider:</Title>
       <div>
-        <p>Willing to rent or buy?</p>
+        <Title level={4}>Willing to rent or buy?</Title>
         <Checkbox.Group options={options} onChange={handleRentBuySelect} />
       </div>
+      <br/>
       <div id="providers">
         <List
           grid={{ gutter: 16, column: 4 }}

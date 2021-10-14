@@ -2,6 +2,9 @@ import { Slider } from "antd";
 import React from "react";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import { setGreaterThan, setLessThan } from "./runtimeSlice";
+import { Typography } from 'antd';
+
+const { Title } = Typography;
 
 interface IRuntimeProps {}
 
@@ -20,7 +23,7 @@ const Runtime: React.FC<IRuntimeProps> = ({}) => {
 
   return (
     <div>
-      <h1>Select Runtime length in minutes: </h1>
+      <Title underline={true} level={3}>Select Runtime length in minutes: </Title>
       <div id="runtime_length">
         <Slider
           range
@@ -30,6 +33,7 @@ const Runtime: React.FC<IRuntimeProps> = ({}) => {
           onAfterChange={handleSetRuntime}
         />
       </div>
+      <br/>
     </div>
   );
 };

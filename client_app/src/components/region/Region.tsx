@@ -3,6 +3,9 @@ import { Box } from "@chakra-ui/react";
 import { Region } from "../../api/api";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import { setRegion } from "./regionSlice";
+import { Typography } from 'antd';
+
+const { Title } = Typography;
 
 interface IRegionProps {}
 
@@ -44,7 +47,8 @@ const RegionComponent: React.FC<IRegionProps> = ({}) => {
           Oop!!! Error getting the media type
         </Box>
       )}
-      <h1>Currently selected: {countryCodeState} </h1>
+      <Title level={3}>Currently selected region: {countryCodeState} </Title>
+      <Title underline={true} level={4}>Set region: </Title>
       <form onSubmit={onRegionSelect}>
         <input
           value={countryCodeState}

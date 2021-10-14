@@ -10,9 +10,11 @@ import {
   populateShows,
 } from "./recommendationSlice";
 import { ImagesAPI, MovieRecommendationAPI, ShowRecommendationAPI } from "../../api/api";
-import { IMovie, IShow } from "./recommendationSlice";
 import { TMDbConstants } from "../../models/TMDbConstants"
 import MediaTypeOptions from "../../models/MediaTypeOptions";
+import { Typography } from 'antd';
+
+const { Title } = Typography;
 
 interface IRecommendationProps {}
 
@@ -25,11 +27,28 @@ const Recommendations: React.FC<IRecommendationProps> = ({}) => {
 
     const countryCode = useAppSelector((state) => state.region.countryCode);
     const mediaTypeChoice = useAppSelector((state) => state.mediaTypes.choice);
-    const wantedGenres = useAppSelector((state) => state.genres.wanted);
+
     const body: any = {};
+
+    const wantedGenres = useAppSelector((state) => state.genres.wanted);
     if (wantedGenres.length > 0) {
         body[`${TMDbConstants.WITH_GENRES_KEY}`] = wantedGenres.map(x => x.id).join(",");
     }
+
+    const notWantedGenres = useAppSelector((state) => state.genres.not_wanted);
+    if (notWantedGenres.length > 0) {
+        body[`${TMDbConstants.WITHOUT_GENRES_KEY}`] = notWantedGenres.map(x => x.id).join(",");
+    }
+
+    const providers = useAppSelector((state) => state.provider.choices);
+    if (providers.length > 0) {
+        body[`${TMDbConstants.WITH_WATCH_PROVIDERS_KEY}`] = providers.join(",");
+        body[`${TMDbConstants.WATCH_REGION_KEY}`] = countryCode;
+    }
+
+    body[`${TMDbConstants.WITH_RUNTIME_GTE_KEY}`] = useAppSelector((state) => state.runtime.runtime.greaterThan);
+    body[`${TMDbConstants.WITH_RUNTIME_LTE_KEY}`] = useAppSelector((state) => state.runtime.runtime.lessThan);
+
 
     // Sort by average rating descending
     body[`${TMDbConstants.SORT_BY_KEY}`] = 'vote_average.desc'
@@ -87,7 +106,7 @@ const Recommendations: React.FC<IRecommendationProps> = ({}) => {
             cover={
               <img
                 alt={recommendation.name}
-                src={ImagesAPI.getImage(recommendation.name)}
+                src={ImagesAPI.getImage(recommendation.poster_path)}
               />
             }
           >
@@ -110,12 +129,16 @@ const Recommendations: React.FC<IRecommendationProps> = ({}) => {
             Oop!!! Error getting the recommendations!
           </Box>
         )}
-        <h1>Recommendation for: {mediaTypeChoice} </h1>
+        <Title underline={true} level={3}>Displaying {mediaTypeChoice} recommendations with the following options (if any):</Title>
         {wantedGenres.length > 0 && (
-            <h1>Genres: {wantedGenres.map(x => x.name).join(",")}</h1>
+            <Title level={4}>Genres: {wantedGenres.map(x => x.name).join(",")}</Title>
         )}
+        {notWantedGenres.length > 0 && (
+            <Title level={4}>Excluded genres: {notWantedGenres.map(x => x.name).join(",")}</Title>
+        )}
+        <br/>
         <div id="recommendations">
-          <p>Recommendations:</p>
+          <Title underline={true} level={4}>Recommendations:</Title>
           <SimpleGrid columns={5} spacing={10}>
             {isMovie && movieRecommendationCardMaker}
             {!isMovie && showRecommendationCardMaker}

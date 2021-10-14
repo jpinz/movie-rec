@@ -23,7 +23,7 @@ const ProviderCard: React.FC<IProviderCardProps> = ({
     <Card
       onClick={handleProviderSelect}
       hoverable
-      style={{ width: 180 }}
+      style={{ width: 240 }}
       cover={
         <img
           alt={provider.provider_name}
