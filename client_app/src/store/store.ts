@@ -4,6 +4,7 @@ import genreReducer from '../components/genres/genreSlice'
 import mediaTypeReducer from '../components/mediaTypes/mediaTypeSlice'
 import regionReducer from '../components/region/regionSlice'
 import contentRatingReducer from '../components/contentRating/contentRatingSlice'
+import providerReducer from '../components/provider/providerSlice'
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     mediaTypes: mediaTypeReducer,
     region: regionReducer,
     contentRating: contentRatingReducer,
+    provider: providerReducer,
   },
 })
 

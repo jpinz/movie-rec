@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import MediaTypeOptions from '../models/MediaTypeOptions';
 import { IContentRating } from '../components/contentRating/contentRatingSlice';
+import { IProvider } from '../components/provider/providerSlice';
 
 const instance = axios.create({
 	baseURL: '/api/v1/',
@@ -19,13 +20,13 @@ const requests = {
 export const MediaType = {
 	getMediaType: (): Promise<MediaTypeOptions> => requests.get('media_type') as Promise<MediaTypeOptions>,
 	setMediaType: (mediaType: MediaTypeOptions): Promise<MediaTypeOptions> =>
-		requests.post('media_type', {mediaType: mediaType}) as Promise<MediaTypeOptions>,
+		requests.post('media_type', { mediaType: mediaType }) as Promise<MediaTypeOptions>,
 }
 
 export const Region = {
 	getRegion: (): Promise<string> => requests.get('region') as Promise<string>,
 	setRegion: (countryCode: string): Promise<string> =>
-		requests.post('region', {countryCode: countryCode}) as Promise<string>,
+		requests.post('region', { countryCode: countryCode }) as Promise<string>,
 };
 
 export const GenresAPI = {
@@ -35,3 +36,11 @@ export const GenresAPI = {
 export const ContentRatingAPI = {
 	getContentRatings: (mediaType: MediaTypeOptions, countryCode: string): Promise<IContentRating[]> => requests.get(`${mediaType}/certification/${countryCode}`) as Promise<IContentRating[]>,
 };
+
+export const ProvidersAPI = {
+	getProviders: (mediaType: MediaTypeOptions, countryCode: string): Promise<IProvider[]> => requests.get(`providers/${mediaType}/${countryCode}`) as Promise<IProvider[]>,
+};
+
+export const ImagesAPI = {
+	getImage: (fileName: string) => { return `https://image.tmdb.org/t/p/original${fileName}` }
+}

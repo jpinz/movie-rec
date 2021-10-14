@@ -26,10 +26,10 @@ def get_country(ip_address):
 
 def get_or_create_value(key, func, *args):
     if session.get(key):
-        return session[key]
+        return jsonify(session[key])
     result = func(*args)
     session[key] = result
-    return result
+    return jsonify(result)
 
 @app.route('/', methods=['GET'])
 def welcome():
@@ -228,7 +228,7 @@ def api_providers():
 @app.route(f'{base_api_endpoint}/providers/movie/<watch_region>', methods=['GET'])
 def api_providers_movies(watch_region=''):
     key = f'providers_movies_{watch_region}'
-    return get_or_create_value(key, tmdb_client.get_movie_providers, watch_region)
+    return jsonify(tmdb_client.get_movie_providers(watch_region=watch_region))
 
 # A route to get the list of TV show providers with available data from TMDb
 @app.route(f'{base_api_endpoint}/providers/tv/<watch_region>', methods=['GET'])

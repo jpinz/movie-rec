@@ -1,5 +1,6 @@
 import React from "react";
 import "./App.css";
+import 'antd/dist/antd.css';
 import { ChakraProvider } from "@chakra-ui/react";
 
 import Page1 from "./pages/Page1";
