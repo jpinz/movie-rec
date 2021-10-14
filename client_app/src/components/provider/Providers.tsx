@@ -1,25 +1,21 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  SimpleGrid,
-} from "@chakra-ui/react";
-import { Card } from "antd";
+import { Box } from "@chakra-ui/react";
+import { Checkbox, List } from "antd";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
-import {
-  addProvider,
-  removeProvider,
-  populateProviders,
-} from "./providerSlice";
-import { ImagesAPI, ProvidersAPI } from "../../api/api";
-import { IProvider } from "./providerSlice";
+import { selectProvider, populateProviders, selectRentBuy } from "./providerSlice";
+import { ProvidersAPI } from "../../api/api";
+import ProviderCard from "./ProviderCard";
+import { CheckboxValueType } from "antd/lib/checkbox/Group";
 
 interface IProvidersProps {}
 
 const Providers: React.FC<IProvidersProps> = ({}) => {
   const choices = useAppSelector((state) =>
-    state.provider.options.filter((provider) =>
-      state.provider.choices.includes(provider.provider_id)
-    )
+    state.provider.options
+      .filter((provider) =>
+        state.provider.choices.includes(provider.provider_id)
+      )
+      .map((provider) => provider.provider_id)
   );
   const providers = useAppSelector((state) => state.provider.options);
   const mediaTypeChoice = useAppSelector((state) => state.mediaTypes.choice);
@@ -27,24 +23,20 @@ const Providers: React.FC<IProvidersProps> = ({}) => {
   const dispatch = useAppDispatch();
   const [isError, setIsError] = useState<boolean>(false);
 
-  const handleProviderAdd = (
-    _selectedList: [{}] | undefined,
-    selectedItem: IProvider
-  ) => {
-    dispatch(addProvider(selectedItem.provider_id));
+
+  const options = ['Rent', 'Buy'];
+
+  const handleRentBuySelect = (selectedItems: CheckboxValueType[]) => {
+    dispatch(selectRentBuy(selectedItems));
   };
 
-  const handleProviderRemove = (
-    _selectedList: [{}] | undefined,
-    removedItem: IProvider
-  ) => {
-    dispatch(removeProvider(removedItem.provider_id));
+  const handleProviderSelect = (selectedItem: number) => {
+    dispatch(selectProvider(selectedItem));
   };
 
   useEffect(() => {
     ProvidersAPI.getProviders(mediaTypeChoice, countryCode)
       .then((data) => {
-        console.log(data);
         dispatch(populateProviders(data));
       })
       .catch((err) => {
@@ -52,23 +44,6 @@ const Providers: React.FC<IProvidersProps> = ({}) => {
       });
     return () => {};
   }, []);
-
-  let providerCardMaker = providers.map((provider, index) => {
-    return (
-      <Card
-        hoverable
-        style={{ width: 240 }}
-        cover={
-          <img
-            alt={provider.provider_name}
-            src={ImagesAPI.getImage(provider.logo_path)}
-          />
-        }
-      >
-        <Card.Meta title={provider.provider_name} />
-      </Card>
-    );
-  });
 
   return (
     <div>
@@ -85,11 +60,27 @@ const Providers: React.FC<IProvidersProps> = ({}) => {
         </Box>
       )}
       <h1>Providers for: {mediaTypeChoice} </h1>
+      <div>
+        <p>Willing to rent or buy?</p>
+        <Checkbox.Group options={options} onChange={handleRentBuySelect} />
+      </div>
       <div id="providers">
-        <p>Providers:</p>
-        <SimpleGrid columns={2} spacing={10}>
-          {providerCardMaker}
-        </SimpleGrid>
+        <List
+          grid={{ gutter: 16, column: 4 }}
+          dataSource={providers}
+          pagination={{
+            pageSize: 16,
+          }}
+          renderItem={(provider) => (
+            <List.Item>
+              <ProviderCard
+                provider={provider}
+                selected={choices.indexOf(provider.provider_id) !== -1}
+                select={handleProviderSelect}
+              />
+            </List.Item>
+          )}
+        />
       </div>
     </div>
   );

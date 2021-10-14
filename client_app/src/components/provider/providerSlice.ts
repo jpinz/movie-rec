@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import { ProvidersAPI } from '../../api/api';
 
 export interface IProvider {
@@ -7,13 +8,18 @@ export interface IProvider {
     provider_name: string,
     provider_id: number
 }
+
 export interface ProviderState {
     choices: number[]
+    rent: boolean
+    buy: boolean
     options: IProvider[]
 }
 
 const initialState: ProviderState = {
     choices: [],
+    rent: false,
+    buy: false,
     options: []
 }
 
@@ -21,23 +27,33 @@ export const providerSlice = createSlice({
     name: 'provider',
     initialState,
     reducers: {
-        addProvider: (state, action: PayloadAction<number>) => {
-            // Redux Toolkit allows us to write "mutating" logic in reducers. It
-            // doesn't actually mutate the state because it uses the Immer library,
-            // which detects changes to a "draft state" and produces a brand new
-            // immutable state based off those changes
-            state.choices.push(action.payload);
-        },
-        removeProvider: (state, action: PayloadAction<number>) => {
-            state.choices = state.choices.filter(id => id !== action.payload);
+        selectProvider: (state, action: PayloadAction<number>) => {
+            let exists = state.choices.indexOf(action.payload) !== -1;
+            if(exists) {
+                state.choices = state.choices.filter(id => id !== action.payload);
+            } else {
+                state.choices.push(action.payload);
+            }
         },
         populateProviders: (state, action: PayloadAction<IProvider[]>) => {
             state.options = action.payload;
+        },
+        selectRentBuy: (state, action: PayloadAction<CheckboxValueType[]>) => {
+            if(action.payload.indexOf("Rent") !== -1) {
+                state.rent = true;
+            } else {
+                state.rent = false;
+            }
+            if(action.payload.indexOf("Buy") !== -1) {
+                state.buy = true;
+            } else {
+                state.buy = false;
+            }
         },
     },
 })
 
 // Action creators are generated for each case reducer function
-export const { addProvider, removeProvider, populateProviders } = providerSlice.actions
+export const { selectProvider, populateProviders, selectRentBuy } = providerSlice.actions
 
 export default providerSlice.reducer
