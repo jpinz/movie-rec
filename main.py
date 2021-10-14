@@ -238,20 +238,14 @@ def api_providers_tv(watch_region=''):
     return get_or_create_value(key, tmdb_client.get_tv_providers, watch_region)
 
 # A route to discover movies based on given criteria
-@app.route(f'{base_api_endpoint}/discover/movies', methods=['GET'])
+@app.route(f'{base_api_endpoint}/discover/movies', methods=['POST'])
 def api_discover_movies():
-    hash = hashlib.md5(json.dumps(request.json, sort_keys=True, indent=2))
-    key = f'discover_movie_{hash}'
-    prop = json.load(request.json)
-    return get_or_create_value(key, tmdb_client.discover_movies, prop)
+    return jsonify(tmdb_client.discover_movies(request.json))
 
 # A route to discover TV shows based on given criteria
-@app.route(f'{base_api_endpoint}/discover/tv', methods=['GET'])
+@app.route(f'{base_api_endpoint}/discover/tv', methods=['POST'])
 def api_discover_tv():
-    hash = hashlib.md5(json.dumps(request.json, sort_keys=True, indent=2))
-    key = f'discover_movie_{hash}'
-    prop = json.load(request.json)
-    return get_or_create_value(key, tmdb_client.discover_tv, prop)
+    return jsonify(tmdb_client.discover_tv(request.json))
 
 if __name__ == '__main__':
     app.secret_key = env_values['FLASK_SECRET']

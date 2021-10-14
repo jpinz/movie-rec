@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import MediaTypeOptions from '../models/MediaTypeOptions';
 import { IContentRating } from '../components/contentRating/contentRatingSlice';
 import { IProvider } from '../components/provider/providerSlice';
+import {IMovie, IShow } from '../components/recommendation/recommendationSlice'
 
 const instance = axios.create({
 	baseURL: '/api/v1/',
@@ -43,4 +44,12 @@ export const ProvidersAPI = {
 
 export const ImagesAPI = {
 	getImage: (fileName: string) => { return `https://image.tmdb.org/t/p/original${fileName}` }
+};
+
+export const MovieRecommendationAPI = {
+	getRecommendations: (body: {}): Promise<IMovie[]> => requests.post(`discover/movies`, body) as Promise<IMovie[]>
+}
+
+export const ShowRecommendationAPI = {
+	getRecommendations: (body: {}): Promise<IShow[]> => requests.post(`discover/tv`, body) as Promise<IShow[]>
 }
