@@ -46,8 +46,15 @@ const Recommendations: React.FC<IRecommendationProps> = ({}) => {
         body[`${TMDbConstants.WATCH_REGION_KEY}`] = countryCode;
     }
 
-    body[`${TMDbConstants.WITH_RUNTIME_GTE_KEY}`] = useAppSelector((state) => state.runtime.runtime.greaterThan);
-    body[`${TMDbConstants.WITH_RUNTIME_LTE_KEY}`] = useAppSelector((state) => state.runtime.runtime.lessThan);
+    const purchaseOption = useAppSelector((state) => state.provider.purchaseOption);
+    if (purchaseOption !== '') {
+      body[`${TMDbConstants.WITH_WATCH_MONETIZATION_TYPES_KEY}`] = purchaseOption;
+    }
+
+    const minimumRuntime = useAppSelector((state) => state.runtime.runtime.greaterThan);
+    body[`${TMDbConstants.WITH_RUNTIME_GTE_KEY}`] = minimumRuntime;
+    const maximumRuntime = useAppSelector((state) => state.runtime.runtime.lessThan);
+    body[`${TMDbConstants.WITH_RUNTIME_LTE_KEY}`] = maximumRuntime;
 
 
     // Sort by average rating descending
@@ -136,6 +143,13 @@ const Recommendations: React.FC<IRecommendationProps> = ({}) => {
         {notWantedGenres.length > 0 && (
             <Title level={4}>Excluded genres: {notWantedGenres.map(x => x.name).join(",")}</Title>
         )}
+        {providers.length > 0 && (
+          <Title level={4}>Providers: {providers.map(x => x).join(",")}</Title>
+        )}
+        {purchaseOption !== '' && (
+          <Title level={4}>Purchase option: {purchaseOption}</Title>
+        )}
+        <Title level={4}>Runtime range in minutes: [{minimumRuntime}, {maximumRuntime}]</Title>
         <br/>
         <div id="recommendations">
           <Title underline={true} level={4}>Recommendations:</Title>

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Box } from "@chakra-ui/react";
-import { Checkbox, List } from "antd";
+import { Radio, List, RadioChangeEvent } from "antd";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
-import { selectProvider, populateProviders, selectRentBuy } from "./providerSlice";
+import { selectProvider, populateProviders, selectPurchaseOption } from "./providerSlice";
 import { ProvidersAPI } from "../../api/api";
 import ProviderCard from "./ProviderCard";
 import { CheckboxValueType } from "antd/lib/checkbox/Group";
@@ -26,11 +26,8 @@ const Providers: React.FC<IProvidersProps> = ({}) => {
   const dispatch = useAppDispatch();
   const [isError, setIsError] = useState<boolean>(false);
 
-
-  const options = ['Rent', 'Buy'];
-
-  const handleRentBuySelect = (selectedItems: CheckboxValueType[]) => {
-    dispatch(selectRentBuy(selectedItems));
+  const handlePurchaseOptionSelect = (e: RadioChangeEvent) => {
+    dispatch(selectPurchaseOption(e.target.value));
   };
 
   const handleProviderSelect = (selectedItem: number) => {
@@ -65,7 +62,13 @@ const Providers: React.FC<IProvidersProps> = ({}) => {
       <Title underline={true} level={3}>Select {mediaTypeChoice} streaming provider:</Title>
       <div>
         <Title level={4}>Willing to rent or buy?</Title>
-        <Checkbox.Group options={options} onChange={handleRentBuySelect} />
+        <Radio.Group defaultValue='any' buttonStyle='solid' onChange={handlePurchaseOptionSelect}>
+          <Radio.Button value='any'>Any</Radio.Button>
+          <Radio.Button value='free'>Free</Radio.Button>
+          <Radio.Button value='ads'>With Ads</Radio.Button>
+          <Radio.Button value='flatrate'>Subscription</Radio.Button>
+          <Radio.Button value='buy'>Buy</Radio.Button>
+        </Radio.Group>
       </div>
       <br/>
       <div id="providers">
